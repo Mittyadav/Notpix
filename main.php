@@ -231,4 +231,3 @@ while (true) {
 
 ?>
 
-Muje iske colors change karne hai or kuch cool dikhe  baki isme kuch b change mat karna jis se muje errors mile
