@@ -1,22 +1,14 @@
 <?php
 
-// Increase the script's execution time and memory limit
-set_time_limit(0);  // No time limit
-ini_set('memory_limit', '512M');  // Increase memory limit
-
 // Color codes
 $green = "32";  // Green color
 $red = "31";    // Red color
 $yellow = "33"; // Yellow color
 $blue = "34";   // Blue color
 
-// Function to clear screen based on OS
-function clearScreen() {
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        system('cls');
-    } else {
-        system('clear');
-    }
+// Function to print colored text
+function printColored($text, $color) {
+    return "\033[" . $color . "m" . $text . "\033[0m";
 }
 
 // Function to generate random user agent
@@ -38,91 +30,9 @@ function generateUserAgent() {
     return $userAgent . rand(1000000, 9999999);
 }
 
-// Function to print colored text
-function printColored($text, $color) {
-    return "\033[" . $color . "m" . $text . "\033[0m";
-}
-
-// Function to print banner
-function printBanner() {
-    global $yellow;
-    $banner = "
-
- -================= ≫ ──── ≪•◦ ❈ ◦•≫ ──── ≪=================-
- │                                                          │
- │  ██████╗  █████╗ ██████╗ ██╗  ██╗                        │
- │  ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝                        │
- │  ██║  ██║███████║██████╔╝█████╔╝                         │
- │  ██║  ██║██╔══██║██╔══██╗██╔═██╗                         │
- │  ██████╔╝██║  ██║██║  ██║██║  ██╗                        │
- │  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝                        │
- │                                                          │
- │                                                          │
- ╰─━━━━━━━━━━━━━━━━━━━━━━━━Termux-os━━━━━━━━━━━━━━━━━━━━━━━─╯
-     - NOT PIXEL AD WATCH -
-     
-              - VERSION 2.0 -
-    
-- MADE BY : @iamak_roy (SCRIPTHUB00)
-- Telegram: @scripthub00
-- channel: https://t.me/scripthub0
-
-- Note: If you encounter the issue \"URL not found\"
-  kindly ignore it.  
-- PX Points will be added to your account within 20 seconds.
-
--------------------------------------------------
-
-";
-    echo printColored($banner, $yellow);
-}
-
-// Check for users.json file
-$usersFile = 'users.json';
-if (!file_exists($usersFile)) {
-    echo printColored("Error: No users found! Please save a Telegram ID by running the command: php adduser.php\nFollow the on-screen instructions to add users.\n", $red);
-    exit;
-}
-
-$users = json_decode(file_get_contents($usersFile), true);
-if (!$users) {
-    echo printColored("Error: Could not parse users.json!\n", $red);
-    exit;
-}
-
-$userPoints = array_fill_keys(array_keys($users), 0);
-
-// Function to generate random chat instance
+// Function to generate chat instance
 function generateChatInstance() {
     return strval(rand(10000000000000, 99999999999999));
-}
-
-// Function to make API request with retry logic
-function makeApiRequestWithRetry($userId, $tgId, $retryCount = 3) {
-    $attempt = 0;
-    $success = false;
-    $response = null;
-    $httpCode = null;
-    $reqHeaders = null;
-
-    while ($attempt < $retryCount && !$success) {
-        list($response, $httpCode, $reqHeaders) = makeApiRequest($userId, $tgId);
-        echo printColored("[ DEBUG ] Attempt #" . ($attempt + 1) . " - HTTP Code: $httpCode\n", $yellow);
-
-        if ($httpCode === 200) {
-            $success = true;
-        } else {
-            echo printColored("[ ERROR ] Failed to connect. Retrying...\n", $red);
-            $attempt++;
-            sleep(5);  // Wait 5 seconds before retrying
-        }
-    }
-
-    if (!$success) {
-        echo printColored("[ ERROR ] Max retries reached. Skipping user $userId.\n", $red);
-    }
-
-    return [$response, $httpCode, $reqHeaders];
 }
 
 // Function to make API request
@@ -159,6 +69,9 @@ function makeApiRequest($userId, $tgId) {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
+    echo printColored("[ DEBUG ] Response: $response\n", $yellow);
+    echo printColored("[ DEBUG ] HTTP Code: $httpCode\n", $yellow);
+
     return [$response, $httpCode, $headers];
 }
 
@@ -175,12 +88,63 @@ function extractReward($response) {
     return null;
 }
 
+// Function to check if user data exists
+function checkUserFile($file) {
+    if (!file_exists($file)) {
+        echo printColored("Error: No users found! Please save a Telegram ID by running the command: php adduser.php\nFollow the on-screen instructions to add users.\n", $red);
+        exit;
+    }
+    return json_decode(file_get_contents($file), true);
+}
+
+// Function to print banner
+function printBanner() {
+    global $yellow;
+    $banner = "
+
+ -================= ≫ ──── ≪•◦ ❈ ◦•≫ ──── ≪=================-
+ │                                                          │
+ │  ██████╗  █████╗ ██████╗ ██╗  ██╗                        │
+ │  ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝                        │
+ │  ██║  ██║███████║██████╔╝█████╔╝                         │
+ │  ██║  ██║██╔══██║██╔══██╗██╔═██╗                         │
+ │  ██████╔╝██║  ██║██║  ██║██║  ██╗                        │
+ │  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝                        │
+ │                                                          │
+ │                                                          │
+ ╰─━━━━━━━━━━━━━━━━━━━━━━━━Termux-os━━━━━━━━━━━━━━━━━━━━━━━─╯
+     - NOT PIXEL AD WATCH -
+     
+              - VERSION 2.0 -
+    
+- MADE BY : @iamak_roy (SCRIPTHUB00)
+- Telegram: @scripthub00
+- channel: https://t.me/scripthub0
+
+- Note: If you encounter the issue \"URL not found\"
+  kindly ignore it.  
+- PX Points will be added to your account within 20 seconds.
+
+-------------------------------------------------
+
+";
+    echo printColored($banner, $yellow);
+}
+
+// Main loop for ad injection and point addition
+$usersFile = 'users.json';
+$users = checkUserFile($usersFile);
+$userPoints = array_fill_keys(array_keys($users), 0);
 $totalPoints = 0;
 $firstRun = true;
 
 while (true) {
     clearScreen();
-    printBanner();
+    printBanner();  // Print the banner at the beginning of each cycle
+
+    echo printColored("===================================\n", $yellow);
+    echo printColored("NOT PIXEL SCRIPT - Version 2.0\n", $yellow);
+    echo printColored("===================================\n", $yellow);
 
     if (!$firstRun) {
         foreach ($users as $userId => $userData) {
@@ -202,8 +166,7 @@ while (true) {
         
         sleep(3);
         
-        // Use retry logic for making API request
-        list($response, $httpCode, $reqHeaders) = makeApiRequestWithRetry($userId, $tgId);
+        list($response, $httpCode, $reqHeaders) = makeApiRequest($userId, $tgId);
         
         if ($httpCode === 200) {
             $reward = extractReward($response);
@@ -261,5 +224,4 @@ while (true) {
 
     $firstRun = false;
 }
-
 ?>
