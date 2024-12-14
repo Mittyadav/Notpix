@@ -198,7 +198,7 @@ while (true) {
         }
     }
 
-    for ($i = 20; $i > 0; $i--) {
+    for ($i = 60; $i > 0; $i--) {
         echo "\r-----> Cooldown $i seconds left...";
         sleep(1);
     }
