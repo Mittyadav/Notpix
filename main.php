@@ -41,7 +41,7 @@ $blue = "34";
 
 // Function to print banner
 function printBanner() {
-    global $green;
+    global $yellow;
     $banner = "
 
  -================= ≫ ──── ≪•◦ ❈ ◦•≫ ──── ≪=================-
@@ -70,7 +70,7 @@ function printBanner() {
 -------------------------------------------------
 
 ";
-    echo printColored($banner, $green);
+    echo printColored($banner, $yellow);
 }
 
 // Check for users.json file
