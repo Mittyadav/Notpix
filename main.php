@@ -4,6 +4,12 @@
 set_time_limit(0);  // No time limit
 ini_set('memory_limit', '512M');  // Increase memory limit
 
+// Color codes
+$green = "32";  // Green color
+$red = "31";    // Red color
+$yellow = "33"; // Yellow color
+$blue = "34";   // Blue color
+
 // Function to clear screen based on OS
 function clearScreen() {
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -36,12 +42,6 @@ function generateUserAgent() {
 function printColored($text, $color) {
     return "\033[" . $color . "m" . $text . "\033[0m";
 }
-
-// Color codes
-$green = "32";
-$red = "31"; 
-$yellow = "33";
-$blue = "34";
 
 // Function to print banner
 function printBanner() {
@@ -214,7 +214,7 @@ while (true) {
             } else {
                 echo printColored("[ ERROR ] Ads watching limit reached.\n", $red);
                 echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", $green);
-                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @scripthub00\n", $yellow);
+                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @airdropconfirm7\n", $yellow);
                 continue;
             }
         } elseif ($httpCode === 403) {
