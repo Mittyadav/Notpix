@@ -1,11 +1,5 @@
 <?php
 
-// Color codes
-$green = "32";  // Green color
-$red = "31";    // Red color
-$yellow = "33"; // Yellow color
-$blue = "34";   // Blue color
-
 // Function to clear screen based on OS
 function clearScreen() {
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -13,11 +7,6 @@ function clearScreen() {
     } else {
         system('clear');
     }
-}
-
-// Function to print colored text
-function printColored($text, $color) {
-    return "\033[" . $color . "m" . $text . "\033[0m";
 }
 
 // Function to generate random user agent
@@ -39,7 +28,67 @@ function generateUserAgent() {
     return $userAgent . rand(1000000, 9999999);
 }
 
-// Function to generate chat instance
+// Function to print colored text
+function printColored($text, $color) {
+    return "\033[" . $color . "m" . $text . "\033[0m";
+}
+
+// Color codes
+$green = "32";
+$red = "31"; 
+$yellow = "33";
+$blue = "34";
+
+// Function to print banner
+function printBanner() {
+    global $green;
+    $banner = "
+
+ -================= ≫ ──── ≪•◦ ❈ ◦•≫ ──── ≪=================-
+ │                                                          │
+ │  ██████╗  █████╗ ██████╗ ██╗  ██╗                        │
+ │  ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝                        │
+ │  ██║  ██║███████║██████╔╝█████╔╝                         │
+ │  ██║  ██║██╔══██║██╔══██╗██╔═██╗                         │
+ │  ██████╔╝██║  ██║██║  ██║██║  ██╗                        │
+ │  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝                        │
+ │                                                          │
+ │                                                          │
+ ╰─━━━━━━━━━━━━━━━━━━━━━━━━Termux-os━━━━━━━━━━━━━━━━━━━━━━━─╯
+     - NOT PIXEL AD WATCH -
+     
+              - VERSION 2.0 -
+    
+- MADE BY : @iamak_roy (SCRIPTHUB00)
+- Telegram: @scripthub00
+- channel: https://t.me/scripthub0
+
+- Note: If you encounter the issue \"URL not found\"
+  kindly ignore it.  
+- PX Points will be added to your account within 20 seconds.
+
+-------------------------------------------------
+
+";
+    echo printColored($banner, $green);
+}
+
+// Check for users.json file
+$usersFile = 'users.json';
+if (!file_exists($usersFile)) {
+    echo printColored("Error: No users found! Please save a Telegram ID by running the command: php adduser.php\nFollow the on-screen instructions to add users.\n", $red);
+    exit;
+}
+
+$users = json_decode(file_get_contents($usersFile), true);
+if (!$users) {
+    echo printColored("Error: Could not parse users.json!\n", $red);
+    exit;
+}
+
+$userPoints = array_fill_keys(array_keys($users), 0);
+
+// Function to generate random chat instance
 function generateChatInstance() {
     return strval(rand(10000000000000, 99999999999999));
 }
@@ -78,9 +127,6 @@ function makeApiRequest($userId, $tgId) {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    echo printColored("[ DEBUG ] Response: $response\n", "33");
-    echo printColored("[ DEBUG ] HTTP Code: $httpCode\n", "33");
-
     return [$response, $httpCode, $headers];
 }
 
@@ -97,71 +143,20 @@ function extractReward($response) {
     return null;
 }
 
-// Function to check if user data exists
-function checkUserFile($file) {
-    if (!file_exists($file)) {
-        echo printColored("Error: No users found! Please save a Telegram ID by running the command: php adduser.php\nFollow the on-screen instructions to add users.\n", "31");
-        exit;
-    }
-    return json_decode(file_get_contents($file), true);
-}
-
-// Function to print banner
-function printBanner() {
-    global $yellow;
-    $banner = "
-
- -================= ≫ ──── ≪•◦ ❈ ◦•≫ ──── ≪=================-
- │                                                          │
- │  ██████╗  █████╗ ██████╗ ██╗  ██╗                        │
- │  ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝                        │
- │  ██║  ██║███████║██████╔╝█████╔╝                         │
- │  ██║  ██║██╔══██║██╔══██╗██╔═██╗                         │
- │  ██████╔╝██║  ██║██║  ██║██║  ██╗                        │
- │  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝                        │
- │                                                          │
- │                                                          │
- ╰─━━━━━━━━━━━━━━━━━━━━━━━━Termux-os━━━━━━━━━━━━━━━━━━━━━━━─╯
-     - NOT PIXEL AD WATCH -
-     
-              - VERSION 2.0 -
-    
-- MADE BY : @iamak_roy (SCRIPTHUB00)
-- Telegram: @scripthub00
-- channel: https://t.me/scripthub0
-
-- Note: If you encounter the issue \"URL not found\"
-  kindly ignore it.  
-- PX Points will be added to your account within 20 seconds.
-
--------------------------------------------------
-
-";
-    echo printColored($banner, "33");
-}
-
-// Main loop for ad injection and point addition
-$usersFile = 'users.json';
-$users = checkUserFile($usersFile);
-$userPoints = array_fill_keys(array_keys($users), 0);
 $totalPoints = 0;
 $firstRun = true;
 
 while (true) {
-    clearScreen();  // Clear screen at the start of each cycle
-    printBanner();  // Print the banner at the beginning of each cycle
-
-    echo printColored("===================================\n", "33");
-    echo printColored("NOT PIXEL SCRIPT - Version 2.0\n", "33");
-    echo printColored("===================================\n", "33");
+    clearScreen();
+    printBanner();
 
     if (!$firstRun) {
         foreach ($users as $userId => $userData) {
             echo "\n";
-            echo printColored("---> $userId +{$userPoints[$userId]} PX\n", "32");
+            echo printColored("---> $userId +{$userPoints[$userId]} PX\n", $green);
         }
         echo "\n";
-        echo printColored("Total PX Earned [ +$totalPoints ]\n\n", "32");
+        echo printColored("Total PX Earned [ +$totalPoints ]\n\n", $green);
     }
 
     $rewards = [];
@@ -170,8 +165,8 @@ while (true) {
     foreach ($users as $userId => $userData) {
         $tgId = $userData['tg_id'];
         
-        echo printColored("[ INFO ] Starting NOT PIXEL Engine\n", "33");
-        echo printColored("[ PROCESS ] Injecting V1 ---> TG ID | $userId ...\n", "34");
+        echo printColored("[ INFO ] Starting NOT PIXEL Engine\n", $yellow);
+        echo printColored("[ PROCESS ] Injecting V1 ---> TG ID | $userId ...\n", $blue);
         
         sleep(3);
         
@@ -182,23 +177,23 @@ while (true) {
             if ($reward) {
                 $rewards[$userId] = $reward;
                 $headers[$userId] = $reqHeaders;
-                echo printColored("[ SUCCESS ] ++ Injected to $userId.\n", "32");
+                echo printColored("[ SUCCESS ] ++ Injected to $userId.\n", $green);
             } else {
-                echo printColored("[ ERROR ] Ads watching limit reached.\n", "31");
-                echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", "32");
-                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @scripthub00\n", "33");
+                echo printColored("[ ERROR ] Ads watching limit reached.\n", $red);
+                echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", $green);
+                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @airdropconfirm7\n", $yellow);
                 continue;
             }
         } elseif ($httpCode === 403) {
-            echo printColored("[ ERROR ] Seems like your IP address is banned\n", "31");
-            echo printColored("[ SOLUTION ] Use Proton VPN install it from play store.\n", "33");
+            echo printColored("[ ERROR ] Seems like your IP address is banned\n", $red);
+            echo printColored("[ SOLUTION ] Use Proton VPN install it from play store.\n", $yellow);
             exit;
         } else {
             if ($httpCode === 400 && strpos($response, 'block_error') !== false) {
-                echo printColored("[ ERROR ] Ads Block error - Ignore it will be fixed automatically -\n", "31");
+                echo printColored("[ ERROR ] Ads Block error - Ignore it will be fixed automatically -\n", $red);
                 continue;
             }
-            echo printColored("[ ERROR ] HTTP Error: $httpCode\n", "31");
+            echo printColored("[ ERROR ] HTTP Error: $httpCode\n", $red);
             continue;
         }
     }
@@ -210,7 +205,7 @@ while (true) {
     echo "\n";
 
     foreach ($rewards as $userId => $reward) {
-        echo printColored("[ PROCESS ] Injecting V2 ---> $userId ]\n", "33");
+        echo printColored("[ PROCESS ] Injecting V2 ---> $userId ]\n", $yellow);
         
         $reqHeaders = $headers[$userId];
         
@@ -225,9 +220,9 @@ while (true) {
         if ($httpCode === 200) {
             $totalPoints += 16;
             $userPoints[$userId] += 16;
-            echo printColored("[ SUCCESS ] ++ $userId +16 PX\n", "32");
+            echo printColored("[ SUCCESS ] ++ $userId +16 PX\n", $green);
         } else {
-            echo printColored("[ ERROR ] Failed to inject for $userId. HTTP Code: $httpCode\n", "31");
+            echo printColored("[ ERROR ] Failed to inject for $userId. HTTP Code: $httpCode\n", $red);
         }
     }
 
