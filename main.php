@@ -78,8 +78,8 @@ function makeApiRequest($userId, $tgId) {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    echo printColored("[ DEBUG ] Response: $response\n", $yellow);
-    echo printColored("[ DEBUG ] HTTP Code: $httpCode\n", $yellow);
+    echo printColored("[ DEBUG ] Response: $response\n", "33");
+    echo printColored("[ DEBUG ] HTTP Code: $httpCode\n", "33");
 
     return [$response, $httpCode, $headers];
 }
@@ -100,7 +100,7 @@ function extractReward($response) {
 // Function to check if user data exists
 function checkUserFile($file) {
     if (!file_exists($file)) {
-        echo printColored("Error: No users found! Please save a Telegram ID by running the command: php adduser.php\nFollow the on-screen instructions to add users.\n", $red);
+        echo printColored("Error: No users found! Please save a Telegram ID by running the command: php adduser.php\nFollow the on-screen instructions to add users.\n", "31");
         exit;
     }
     return json_decode(file_get_contents($file), true);
@@ -137,7 +137,7 @@ function printBanner() {
 -------------------------------------------------
 
 ";
-    echo printColored($banner, $yellow);
+    echo printColored($banner, "33");
 }
 
 // Main loop for ad injection and point addition
@@ -151,17 +151,17 @@ while (true) {
     clearScreen();  // Clear screen at the start of each cycle
     printBanner();  // Print the banner at the beginning of each cycle
 
-    echo printColored("===================================\n", $yellow);
-    echo printColored("NOT PIXEL SCRIPT - Version 2.0\n", $yellow);
-    echo printColored("===================================\n", $yellow);
+    echo printColored("===================================\n", "33");
+    echo printColored("NOT PIXEL SCRIPT - Version 2.0\n", "33");
+    echo printColored("===================================\n", "33");
 
     if (!$firstRun) {
         foreach ($users as $userId => $userData) {
             echo "\n";
-            echo printColored("---> $userId +{$userPoints[$userId]} PX\n", $green);
+            echo printColored("---> $userId +{$userPoints[$userId]} PX\n", "32");
         }
         echo "\n";
-        echo printColored("Total PX Earned [ +$totalPoints ]\n\n", $green);
+        echo printColored("Total PX Earned [ +$totalPoints ]\n\n", "32");
     }
 
     $rewards = [];
@@ -170,8 +170,8 @@ while (true) {
     foreach ($users as $userId => $userData) {
         $tgId = $userData['tg_id'];
         
-        echo printColored("[ INFO ] Starting NOT PIXEL Engine\n", $yellow);
-        echo printColored("[ PROCESS ] Injecting V1 ---> TG ID | $userId ...\n", $blue);
+        echo printColored("[ INFO ] Starting NOT PIXEL Engine\n", "33");
+        echo printColored("[ PROCESS ] Injecting V1 ---> TG ID | $userId ...\n", "34");
         
         sleep(3);
         
@@ -182,23 +182,23 @@ while (true) {
             if ($reward) {
                 $rewards[$userId] = $reward;
                 $headers[$userId] = $reqHeaders;
-                echo printColored("[ SUCCESS ] ++ Injected to $userId.\n", $green);
+                echo printColored("[ SUCCESS ] ++ Injected to $userId.\n", "32");
             } else {
-                echo printColored("[ ERROR ] Ads watching limit reached.\n", $red);
-                echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", $green);
-                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @airdropconfirm7\n", $yellow);
+                echo printColored("[ ERROR ] Ads watching limit reached.\n", "31");
+                echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", "32");
+                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @scripthub00\n", "33");
                 continue;
             }
         } elseif ($httpCode === 403) {
-            echo printColored("[ ERROR ] Seems like your IP address is banned\n", $red);
-            echo printColored("[ SOLUTION ] Use Proton VPN install it from play store.\n", $yellow);
+            echo printColored("[ ERROR ] Seems like your IP address is banned\n", "31");
+            echo printColored("[ SOLUTION ] Use Proton VPN install it from play store.\n", "33");
             exit;
         } else {
             if ($httpCode === 400 && strpos($response, 'block_error') !== false) {
-                echo printColored("[ ERROR ] Ads Block error - Ignore it will be fixed automatically -\n", $red);
+                echo printColored("[ ERROR ] Ads Block error - Ignore it will be fixed automatically -\n", "31");
                 continue;
             }
-            echo printColored("[ ERROR ] HTTP Error: $httpCode\n", $red);
+            echo printColored("[ ERROR ] HTTP Error: $httpCode\n", "31");
             continue;
         }
     }
@@ -210,7 +210,7 @@ while (true) {
     echo "\n";
 
     foreach ($rewards as $userId => $reward) {
-        echo printColored("[ PROCESS ] Injecting V2 ---> $userId ]\n", $yellow);
+        echo printColored("[ PROCESS ] Injecting V2 ---> $userId ]\n", "33");
         
         $reqHeaders = $headers[$userId];
         
@@ -225,9 +225,9 @@ while (true) {
         if ($httpCode === 200) {
             $totalPoints += 16;
             $userPoints[$userId] += 16;
-            echo printColored("[ SUCCESS ] ++ $userId +16 PX\n", $green);
+            echo printColored("[ SUCCESS ] ++ $userId +16 PX\n", "32");
         } else {
-            echo printColored("[ ERROR ] Failed to inject for $userId. HTTP Code: $httpCode\n", $red);
+            echo printColored("[ ERROR ] Failed to inject for $userId. HTTP Code: $httpCode\n", "31");
         }
     }
 
