@@ -8,9 +8,21 @@ function clearScreen() {
     }
 }
 
-// Print colored message
-function printred($message) {
+// Colored text functions
+function printGreen($message) {
     echo "\033[1;32m$message\033[0m\n";
+}
+
+function printRed($message) {
+    echo "\033[1;31m$message\033[0m\n";
+}
+
+function printYellow($message) {
+    echo "\033[1;33m$message\033[0m\n";
+}
+
+function printSkyblue($message) {
+    echo "\033[1;36m$message\033[0m\n";
 }
 
 // Extract ID from referral link
@@ -21,26 +33,26 @@ function extractReferralId($link) {
     return false;
 }
 
-// Clear screen initially
+// Initialize script
 clearScreen();
-
-// Print welcome messages
-printYellow(". Open Not Pixel");
-printGreen(". Copy your Not Pixel referral link"); 
-printRed(". Multiple accounts supported");
+printYellow("Welcome to the Not Pixel Referral Link Saver!");
+printGreen("1. Open Not Pixel.");
+printGreen("2. Copy your Not Pixel referral link.");
+printGreen("3. Multiple accounts are supported.");
 
 // File to store user data
 $usersFile = 'users.json';
 $users = file_exists($usersFile) ? json_decode(file_get_contents($usersFile), true) : [];
 
+// Main loop to process referral links
 while (true) {
-    printGreen("Please paste your Not Pixel referral link:");
+    printYellow("Please paste your Not Pixel referral link:");
     $referralLink = trim(fgets(STDIN));
     
     $userId = extractReferralId($referralLink);
     
     if (!$userId) {
-        printyellow("Error: Invalid Not Pixel referral link! Please try again.");
+        printRed("Error: Invalid Not Pixel referral link! Please try again.");
         continue;
     }
     
@@ -67,6 +79,11 @@ while (true) {
     }
 }
 
+// Display all saved IDs
 printSkyblue("\nSaved IDs:");
-echo json_encode($users, JSON_PRETTY_PRINT) . "\n";
+foreach ($users as $userId => $data) {
+    printGreen("User ID: {$userId}, Saved At: {$data['saved_at']}");
+}
+
+printYellow("\nThank you for using the Not Pixel Referral Link Saver!");
 ?>
