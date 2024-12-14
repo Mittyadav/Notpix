@@ -181,7 +181,7 @@ while (true) {
             } else {
                 echo printColored("[ ERROR ] Ads watching limit reached.\n", $red);
                 echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", $green);
-                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @airdropconfirm7\n", $yellow);
+                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @scripthub00 \n", $yellow);
                 continue;
             }
         } elseif ($httpCode === 403) {
