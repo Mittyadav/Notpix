@@ -6,6 +6,15 @@ $red = "31";    // Red color
 $yellow = "33"; // Yellow color
 $blue = "34";   // Blue color
 
+// Function to clear screen based on OS
+function clearScreen() {
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        system('cls');
+    } else {
+        system('clear');
+    }
+}
+
 // Function to print colored text
 function printColored($text, $color) {
     return "\033[" . $color . "m" . $text . "\033[0m";
@@ -139,7 +148,7 @@ $totalPoints = 0;
 $firstRun = true;
 
 while (true) {
-    clearScreen();
+    clearScreen();  // Clear screen at the start of each cycle
     printBanner();  // Print the banner at the beginning of each cycle
 
     echo printColored("===================================\n", $yellow);
@@ -224,4 +233,5 @@ while (true) {
 
     $firstRun = false;
 }
+
 ?>
