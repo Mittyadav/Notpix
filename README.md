@@ -16,11 +16,11 @@ apt update && apt upgrade -y
 ```
 3. Clone the repository:
 ```
-git clone https://github.com/CRYPTOMASTER09/Notpixel-Ads0.git
+git clone https://github.com/Mittyadav/Notpix.git
 ```
 4. Navigate to the repository:
 ```
-cd Notpixel-Ads0
+cd Notpix
 ```
 5.Add Refferal link here:
 ```
@@ -33,4 +33,4 @@ php main.php
 Enjoy Your Script 
 Warning ⚠️ Its Puplic Not for sale
 
-Follow me on Telegram @airdropconfirm7
+Follow me on Telegram @scripthub00
