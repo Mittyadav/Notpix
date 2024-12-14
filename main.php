@@ -199,7 +199,7 @@ while (true) {
     }
 
     // Randomized cooldown to prevent rate limiting
-$cooldownTime = mt_rand(30, 120);
+$cooldownTime = mt_rand(15, 35);
 for ($i = $cooldownTime; $i > 0; $i--) {
     echo "\r-----> Cooldown $i seconds left...";
     sleep(1);
