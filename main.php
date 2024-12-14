@@ -14,9 +14,9 @@ function generateUserAgent() {
     $os = ['Windows', 'Linux', 'iOS', 'Android'];
     $versions = ['8', '9', '10', '11', '12', '13', '14'];
     $devices = ['Samsung', 'Motorola', 'Xiaomi', 'Huawei', 'OnePlus'];
-    
+
     $selectedOs = $os[array_rand($os)];
-    
+
     if ($selectedOs === 'Android') {
         $version = $versions[array_rand($versions)];
         $device = $devices[array_rand($devices)];
@@ -24,7 +24,7 @@ function generateUserAgent() {
     } else {
         $userAgent = "Mozilla/5.0 ($selectedOs NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36";
     }
-    
+
     return $userAgent . rand(1000000, 9999999);
 }
 
@@ -35,7 +35,7 @@ function printColored($text, $color) {
 
 // Color codes
 $green = "32";
-$red = "31"; 
+$red = "31";
 $yellow = "33";
 $blue = "34";
 
@@ -53,21 +53,14 @@ function printBanner() {
  │  ██████╔╝██║  ██║██║  ██║██║  ██╗                        │
  │  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝                        │
  │                                                          │
- │                                                          │
- ╰─━━━━━━━━━━━━━━━━━━━━━━━━Termux-os━━━━━━━━━━━━━━━━━━━━━━━─╯
-     - NOT PIXEL AD WATCH -
-     
-              - VERSION 2.0 -
-    
-- MADE BY : @iamak_roy (SCRIPTHUB00)
+ ╰─━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━─╯
+
+- Version: 2.0
+- Created by: @iamak_roy (SCRIPTHUB00)
 - Telegram: @scripthub00
-- channel: https://t.me/scripthub0
+- Channel: https://t.me/scripthub0
 
-- Note: If you encounter the issue \"URL not found\"
-  kindly ignore it.  
-- PX Points will be added to your account within 20 seconds.
-
--------------------------------------------------
+--------------------------------------------------
 
 ";
     echo printColored($banner, $yellow);
@@ -76,7 +69,7 @@ function printBanner() {
 // Check for users.json file
 $usersFile = 'users.json';
 if (!file_exists($usersFile)) {
-    echo printColored("Error: No users found! Please save a Telegram ID by running the command: php adduser.php\nFollow the on-screen instructions to add users.\n", $red);
+    echo printColored("Error: No users found! Add a Telegram ID with: php adduser.php\n", $red);
     exit;
 }
 
@@ -99,10 +92,10 @@ function makeApiRequest($userId, $tgId) {
     
     $userAgent = generateUserAgent();
     $baseUrl = "https://app.notpx.app/";
-    
+
     $headers = [
         'Host: api.adsgram.ai',
-        'Connection: keep-alive', 
+        'Connection: keep-alive',
         'Cache-Control: max-age=0',
         'sec-ch-ua-platform: "Android"',
         "User-Agent: $userAgent",
@@ -123,6 +116,7 @@ function makeApiRequest($userId, $tgId) {
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60); // Set timeout
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -144,90 +138,36 @@ function extractReward($response) {
 }
 
 $totalPoints = 0;
-$firstRun = true;
 
 while (true) {
     clearScreen();
     printBanner();
 
-    if (!$firstRun) {
-        foreach ($users as $userId => $userData) {
-            echo "\n";
-            echo printColored("---> $userId +{$userPoints[$userId]} PX\n", $green);
-        }
-        echo "\n";
-        echo printColored("Total PX Earned [ +$totalPoints ]\n\n", $green);
-    }
-
-    $rewards = [];
-    $headers = [];
-
     foreach ($users as $userId => $userData) {
         $tgId = $userData['tg_id'];
-        
-        echo printColored("[ INFO ] Starting NOT PIXEL Engine\n", $yellow);
-        echo printColored("[ PROCESS ] Injecting V1 ---> TG ID | $userId ...\n", $blue);
-        
-        sleep(3);
-        
+
+        echo printColored("[ INFO ] Starting engine for $userId...\n", $yellow);
         list($response, $httpCode, $reqHeaders) = makeApiRequest($userId, $tgId);
-        
+
         if ($httpCode === 200) {
             $reward = extractReward($response);
             if ($reward) {
-                $rewards[$userId] = $reward;
-                $headers[$userId] = $reqHeaders;
-                echo printColored("[ SUCCESS ] ++ Injected to $userId.\n", $green);
+                $totalPoints += 16;
+                $userPoints[$userId] += 16;
+                echo printColored("[ SUCCESS ] $userId earned 16 PX\n", $green);
             } else {
-                echo printColored("[ ERROR ] Ads watching limit reached.\n", $red);
-                echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", $green);
-                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @airdropconfirm7\n", $yellow);
+                echo printColored("[ ERROR ] Ad limit reached for $userId.\n", $red);
                 continue;
             }
         } elseif ($httpCode === 403) {
-            echo printColored("[ ERROR ] Seems like your IP address is banned\n", $red);
-            echo printColored("[ SOLUTION ] Use Proton VPN install it from play store.\n", $yellow);
+            echo printColored("[ ERROR ] IP banned. Use VPN.\n", $red);
             exit;
         } else {
-            if ($httpCode === 400 && strpos($response, 'block_error') !== false) {
-                echo printColored("[ ERROR ] Ads Block error - Ignore it will be fixed automatically -\n", $red);
-                continue;
-            }
-            echo printColored("[ ERROR ] HTTP Error: $httpCode\n", $red);
-            continue;
+            echo printColored("[ ERROR ] HTTP Error: $httpCode for $userId\n", $red);
         }
     }
 
-    for ($i = 20; $i > 0; $i--) {
-        echo "\r-----> Cooldown $i seconds left...";
-        sleep(1);
-    }
-    echo "\n";
-
-    foreach ($rewards as $userId => $reward) {
-        echo printColored("[ PROCESS ] Injecting V2 ---> $userId ]\n", $yellow);
-        
-        $reqHeaders = $headers[$userId];
-        
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $reward);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $reqHeaders);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode === 200) {
-            $totalPoints += 16;
-            $userPoints[$userId] += 16;
-            echo printColored("[ SUCCESS ] ++ $userId +16 PX\n", $green);
-        } else {
-            echo printColored("[ ERROR ] Failed to inject for $userId. HTTP Code: $httpCode\n", $red);
-        }
-    }
-
-    $firstRun = false;
+    echo printColored("Cooldown for 60 seconds...\n", $yellow);
+    sleep(60); // Cooldown between cycles
 }
-
 ?>
-
