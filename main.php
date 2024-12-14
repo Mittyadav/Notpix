@@ -198,11 +198,13 @@ while (true) {
         }
     }
 
-    for ($i = 60; $i > 0; $i--) {
-        echo "\r-----> Cooldown $i seconds left...";
-        sleep(1);
-    }
-    echo "\n";
+    // Randomized cooldown to prevent rate limiting
+$cooldownTime = mt_rand(30, 120);
+for ($i = $cooldownTime; $i > 0; $i--) {
+    echo "\r-----> Cooldown $i seconds left...";
+    sleep(1);
+}
+echo "\n";
 
     foreach ($rewards as $userId => $reward) {
         echo printColored("[ PROCESS ] Injecting V2 ---> $userId ]\n", $yellow);
