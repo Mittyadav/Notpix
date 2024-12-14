@@ -1,5 +1,9 @@
 <?php
 
+// Increase the script's execution time and memory limit
+set_time_limit(0);  // No time limit
+ini_set('memory_limit', '512M');  // Increase memory limit
+
 // Function to clear screen based on OS
 function clearScreen() {
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -93,6 +97,34 @@ function generateChatInstance() {
     return strval(rand(10000000000000, 99999999999999));
 }
 
+// Function to make API request with retry logic
+function makeApiRequestWithRetry($userId, $tgId, $retryCount = 3) {
+    $attempt = 0;
+    $success = false;
+    $response = null;
+    $httpCode = null;
+    $reqHeaders = null;
+
+    while ($attempt < $retryCount && !$success) {
+        list($response, $httpCode, $reqHeaders) = makeApiRequest($userId, $tgId);
+        echo printColored("[ DEBUG ] Attempt #" . ($attempt + 1) . " - HTTP Code: $httpCode\n", $yellow);
+
+        if ($httpCode === 200) {
+            $success = true;
+        } else {
+            echo printColored("[ ERROR ] Failed to connect. Retrying...\n", $red);
+            $attempt++;
+            sleep(5);  // Wait 5 seconds before retrying
+        }
+    }
+
+    if (!$success) {
+        echo printColored("[ ERROR ] Max retries reached. Skipping user $userId.\n", $red);
+    }
+
+    return [$response, $httpCode, $reqHeaders];
+}
+
 // Function to make API request
 function makeApiRequest($userId, $tgId) {
     $url = "https://api.adsgram.ai/adv?blockId=4853&tg_id=$tgId&tg_platform=android&platform=Linux%20aarch64&language=en&chat_type=sender&chat_instance=" . generateChatInstance() . "&top_domain=app.notpx.app";
@@ -133,16 +165,13 @@ function makeApiRequest($userId, $tgId) {
 // Function to extract reward value
 function extractReward($response) {
     $data = json_decode($response, true);
-    echo printColored("[ DEBUG ] Raw API Response: $response\n", $yellow);  // Debugging response
     if ($data && isset($data['banner']['trackings'])) {
         foreach ($data['banner']['trackings'] as $tracking) {
             if ($tracking['name'] === 'reward') {
-                echo printColored("[ DEBUG ] Reward Found: " . $tracking['value'] . "\n", $green);  // Debugging extracted reward
                 return $tracking['value'];
             }
         }
     }
-    echo printColored("[ ERROR ] No reward found in response.\n", $red);
     return null;
 }
 
@@ -173,10 +202,8 @@ while (true) {
         
         sleep(3);
         
-        list($response, $httpCode, $reqHeaders) = makeApiRequest($userId, $tgId);
-        
-        echo printColored("[ DEBUG ] HTTP Response Code: $httpCode\n", $yellow);  // Debugging HTTP status code
-        echo printColored("[ DEBUG ] Response: $response\n", $yellow);  // Debugging full response
+        // Use retry logic for making API request
+        list($response, $httpCode, $reqHeaders) = makeApiRequestWithRetry($userId, $tgId);
         
         if ($httpCode === 200) {
             $reward = extractReward($response);
@@ -187,7 +214,7 @@ while (true) {
             } else {
                 echo printColored("[ ERROR ] Ads watching limit reached.\n", $red);
                 echo printColored("[ SOLUTION ] Try VPN or wait for 24 hours.\nUse Proton VPN install it from play store.\n", $green);
-                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @airdropconfirm7\n", $yellow);
+                echo printColored("[ REPORT ] If facing issue again and again Send Details and ScreenShot Contact Developer Telegram @scripthub00\n", $yellow);
                 continue;
             }
         } elseif ($httpCode === 403) {
@@ -222,9 +249,6 @@ while (true) {
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
-        echo printColored("[ DEBUG ] HTTP Code after Injecting: $httpCode\n", $yellow);  // Debugging HTTP code after injection
-        echo printColored("[ DEBUG ] Response after Injecting: $response\n", $yellow);  // Debugging response after injection
 
         if ($httpCode === 200) {
             $totalPoints += 16;
