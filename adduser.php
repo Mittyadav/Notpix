@@ -9,7 +9,7 @@ function clearScreen() {
 }
 
 // Print colored message
-function printred($message) {
+function printGreen($message) {
     echo "\033[1;32m$message\033[0m\n";
 }
 
@@ -25,9 +25,9 @@ function extractReferralId($link) {
 clearScreen();
 
 // Print welcome messages
-printYellow(". Open Not Pixel");
+printGreen(". Open Not Pixel");
 printGreen(". Copy your Not Pixel referral link"); 
-printRed(". Multiple accounts supported");
+printGreen(". Multiple accounts supported");
 
 // File to store user data
 $usersFile = 'users.json';
@@ -40,14 +40,14 @@ while (true) {
     $userId = extractReferralId($referralLink);
     
     if (!$userId) {
-        printyellow("Error: Invalid Not Pixel referral link! Please try again.");
+        printGreen("Error: Invalid Not Pixel referral link! Please try again.");
         continue;
     }
     
     if (isset($users[$userId])) {
-        printSkyblue("Error: ID already saved!");
+        printGreen("Error: ID already saved!");
         $userData = $users[$userId];
-        printSkyblue("User ID: {$userId}\nSaved At: {$userData['saved_at']}");
+        printGreen("User ID: {$userId}\nSaved At: {$userData['saved_at']}");
         continue;
     }
     
@@ -59,7 +59,7 @@ while (true) {
     file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
     printGreen("Success: ID saved!");
     
-    printYellow("Do you want to save more referral links? (y/n):");
+    printGreen("Do you want to save more referral links? (y/n):");
     $continue = strtolower(trim(fgets(STDIN)));
     
     if ($continue !== 'y') {
@@ -67,6 +67,6 @@ while (true) {
     }
 }
 
-printSkyblue("\nSaved IDs:");
+printGreen("\nSaved IDs:");
 echo json_encode($users, JSON_PRETTY_PRINT) . "\n";
 ?>
